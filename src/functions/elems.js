@@ -1,4 +1,4 @@
-import { uuid } from "./helpers";
+import { avatars, uuid } from "./helpers";
 
 const elems = [
   {
@@ -65,38 +65,7 @@ const elems = [
     settings: {
       fields: ["avatar", "title", "position", "content"],
     },
-    items: [
-      {
-        id: uuid(),
-        component_setting: "SimpleTextSetting",
-        avatar: null,
-        title: "Join",
-        position: "CEO",
-        child_styles: {},
-        content:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-      },
-      {
-        id: uuid(),
-        component_setting: "SimpleTextSetting",
-        avatar: null,
-        title: "Steve",
-        position: "CTO",
-        child_styles: {},
-        content:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-      },
-      {
-        id: uuid(),
-        component_setting: "SimpleTextSetting",
-        avatar: null,
-        title: "Seven",
-        position: "CPO",
-        child_styles: {},
-        content:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
-      },
-    ],
+    items: renderCardItems.call(),
     styles: {
       color: "black",
       property: null,
@@ -107,5 +76,40 @@ const elems = [
     component_setting: "ListSetting",
   },
 ];
+
+function renderCardItems() {
+  return [
+    {
+      id: uuid(),
+      component_setting: "SimpleTextSetting",
+      avatar: avatars[1],
+      title: "Join",
+      position: "CEO",
+      child_styles: {},
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
+    },
+    {
+      id: uuid(),
+      component_setting: "SimpleTextSetting",
+      avatar: avatars[2],
+      title: "Steve",
+      position: "CTO",
+      child_styles: {},
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
+    },
+    {
+      id: uuid(),
+      component_setting: "SimpleTextSetting",
+      avatar: null,
+      title: "Seven",
+      position: "CPO",
+      child_styles: {},
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
+    },
+  ];
+}
 
 export default elems;
