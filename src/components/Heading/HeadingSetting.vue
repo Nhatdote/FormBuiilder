@@ -144,14 +144,14 @@ export default {
       const elem = this.getSelected;
       const data = {};
 
-      if (elem.settings) {
+      if (elem && elem.settings) {
         const settings = elem.settings;
         data.tag = settings.tag || "h1";
         data.content = settings.content || elem.desc || elem.label;
         data.link = settings.link || null;
       }
 
-      if (elem.styles) {
+      if (elem && elem.styles) {
         const styles = elem.styles;
         data.align = styles.align || "left";
         data.property = styles.property || "normal";

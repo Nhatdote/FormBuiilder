@@ -14,9 +14,9 @@
     </div>
     <div class="tab-content">
       <div v-if="activeTab === 'design'">
-        <div class="mb-3">
+        <div class="mb-3 flex items-center">
           <color-picker
-            v-model:pureColor="getSelected.styles.bgColor"
+            v-model:pureColor="bgColor"
             useType="pure"
             disableHistory
             shape="circle"
@@ -39,67 +39,83 @@
       </div>
 
       <div v-else>
-        <div
-          v-for="item in getSelected.items"
-          :key="item.id"
-          class="border p-2 rounded-md shadow-sm mb-2"
+        <draggable
+          tag="ul"
+          :list="getSelected.items"
+          class="list-group"
+          handle=".handle"
+          item-key="id"
         >
-          <div class="flex list-user">
-            <div class="font-bold flex-grow" @click="toggleCollapse(item)">
-              {{ item.title }}
-            </div>
-            <div class="flex-shrink-0 list-user-actions">
-              <DuplicateIcon
-                class="w-6 h-6 p-1 text-green-600"
-                @click="userClone(item)"
-              />
-              <TrashIcon
-                class="w-6 h-6 p-1 text-red-600"
-                @click="userDelete(item)"
-              />
-              <MenuAlt4Icon class="w-6 h-6 p-1 text-gray-400" />
-            </div>
-          </div>
-          <div v-show="item.id === collapse" class="transition-all">
-            <div class="mb-2">
-              <label for="title" class="text-sm">{{ "Name" }}</label>
-              <input
-                type="text"
-                class="block w-full border border-gray-500 rounded-md p-2"
-                v-model="item.title"
-              />
-            </div>
-            <div class="mb-2">
-              <label for="avatar" class="text-sm">{{ "Avatar" }}</label>
-              <div class="grid grid-cols-4 gap-2">
+          <template #item="{ element }">
+            <div class="border p-2 rounded-md shadow-sm mb-2">
+              <div class="flex list-user">
                 <div
-                  v-for="(img, i) in images"
-                  :key="i"
-                  :class="item.avatar === img ? 'border-2 border-red-400' : ''"
+                  class="font-bold flex-grow"
+                  @click="toggleCollapse(element)"
                 >
-                  <img :src="img" alt="" @click="item.avatar = img" />
+                  {{ element.title }}
+                </div>
+                <div class="flex-shrink-0 list-user-actions">
+                  <DuplicateIcon
+                    title="Clone"
+                    class="w-6 h-6 p-1 text-green-600"
+                    @click="userClone(element)"
+                  />
+                  <TrashIcon
+                    title="Delete"
+                    class="w-6 h-6 p-1 text-red-600"
+                    @click="userDelete(element)"
+                  />
+                  <MenuAlt4Icon
+                    title="Sort"
+                    class="handle w-6 h-6 p-1 text-gray-400"
+                  />
+                </div>
+              </div>
+              <div v-show="element.id === collapse" class="transition-all">
+                <div class="mb-2">
+                  <label for="title" class="text-sm">{{ "Name" }}</label>
+                  <input
+                    type="text"
+                    class="block w-full border border-gray-500 rounded-md p-2"
+                    v-model="element.title"
+                  />
+                </div>
+                <div class="mb-2">
+                  <label for="avatar" class="text-sm">{{ "Avatar" }}</label>
+                  <div class="grid grid-cols-4 gap-2">
+                    <div
+                      v-for="(img, i) in images"
+                      :key="i"
+                      :class="
+                        element.avatar === img ? 'border-2 border-red-400' : ''
+                      "
+                    >
+                      <img :src="img" alt="" @click="element.avatar = img" />
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label for="position" class="text-sm">{{ "Position" }}</label>
+                  <input
+                    type="text"
+                    class="block w-full border border-gray-500 rounded-md p-2"
+                    v-model="element.position"
+                  />
+                </div>
+                <div class="mb-2">
+                  <label for="content" class="text-sm">{{ "Content" }}</label>
+                  <textarea
+                    type="text"
+                    class="block w-full border border-gray-500 rounded-md p-2"
+                    rows="5"
+                    v-model="element.content"
+                  ></textarea>
                 </div>
               </div>
             </div>
-            <div class="mb-2">
-              <label for="position" class="text-sm">{{ "Position" }}</label>
-              <input
-                type="text"
-                class="block w-full border border-gray-500 rounded-md p-2"
-                v-model="item.position"
-              />
-            </div>
-            <div class="mb-2">
-              <label for="content" class="text-sm">{{ "Content" }}</label>
-              <textarea
-                type="text"
-                class="block w-full border border-gray-500 rounded-md p-2"
-                rows="5"
-                v-model="item.content"
-              ></textarea>
-            </div>
-          </div>
-        </div>
+          </template>
+        </draggable>
 
         <div class="text-blue-500 font-bold cursor-pointer" @click="userAdd">
           {{ "+ Add item" }}
@@ -113,11 +129,18 @@
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { mapGetters } from "vuex";
-import { uuid } from "../../functions/helpers";
+import { clone, uuid } from "../../functions/helpers";
 import { DuplicateIcon, TrashIcon, MenuAlt4Icon } from "@heroicons/vue/outline";
+import draggable from "vuedraggable";
 
 export default {
-  components: { ColorPicker, DuplicateIcon, TrashIcon, MenuAlt4Icon },
+  components: {
+    draggable,
+    ColorPicker,
+    DuplicateIcon,
+    TrashIcon,
+    MenuAlt4Icon,
+  },
   data() {
     return {
       collapse: null,
@@ -138,6 +161,7 @@ export default {
         "https://media.istockphoto.com/vectors/funny-cartoon-monster-face-vector-monster-square-avatar-vector-id1212937699?k=20&m=1212937699&s=170667a&w=0&h=qvoSZ28QKOdtTi74dOgGAw_egmlIBWe66tJxlPCH26A=",
         "https://img.myloview.com/stickers/funny-cartoon-monster-face-vector-monster-square-avatar-400-205411727.jpg",
       ],
+      bgColor: "white",
     };
   },
   mounted() {
@@ -194,29 +218,29 @@ export default {
     ...mapGetters(["getSelected"]),
     settings() {
       const elem = this.getSelected;
-      const design = {};
-      const content = {};
+      let design = {};
+      let content = {};
 
-      if (elem.styles) {
-        Object.assign(design, {
+      if (elem && elem.styles) {
+        design = {
           background: elem.styles.background,
           align: elem.styles.align,
           boxShadow: elem.styles.boxShadow,
           border: elem.styles.border,
           spacing: elem.styles.spacing,
           padding: elem.styles.padding,
-        });
+        };
       }
 
-      if (elem.settings) {
-        Object.assign(content, {
+      if (elem && elem.settings) {
+        content = {
           layout: elem.settings.layout,
           image: elem.settings.image,
           title: elem.settings.title,
           content: elem.settings.content,
           btnText: elem.settings.btnText,
           link: elem.settings.link,
-        });
+        };
       }
 
       return {
@@ -227,6 +251,9 @@ export default {
     styles() {},
   },
   watch: {
+    bgColor(val) {
+      this.getSelected.styles.bgColor = val;
+    },
     content: {
       handler(val) {
         this.$emit("draft", {

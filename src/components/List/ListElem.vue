@@ -8,8 +8,17 @@
     <div class="grid grid-cols-3 gap-8">
       <div v-for="(item, i) in items" :key="i">
         <div
-          class="mb-4 builder-elem"
-          :style="`${settings.align ? 'text-align: ' + settings.align : ''}`"
+          :class="`builder-elem mb-5 ${
+            getSelected &&
+            item.id === getSelected.id &&
+            item.child_target === 'content'
+              ? 'active'
+              : ''
+          } ${item.content_class}`"
+          :style="`${
+            settings.align ? 'text-align: ' + settings.align + ';' : ''
+          } ${item.content_color ? 'color: ' + item.content_color : ''}`"
+          @click.stop="settingChildOpen(item, 'content')"
         >
           {{ item.content }}
         </div>
@@ -23,15 +32,19 @@
           </div>
           <div class="flex-grow ml-3 text-left">
             <div
-              :class="`font-bold builder-elem ${
-                getSelected && item.id === getSelected.id ? 'active' : ''
-              }`"
+              :class="`builder-elem ${
+                getSelected &&
+                item.id === getSelected.id &&
+                item.child_target === 'title'
+                  ? 'active'
+                  : ''
+              } ${item.title_class}`"
               :style="`${
                 settings.color ? 'color: ' + settings.color + ';' : ''
-              }`"
-              @click.stop="settingOpen(item)"
+              } ${item.title_color ? 'color: ' + item.title_color : ''}`"
+              @click.stop="settingChildOpen(item, 'title')"
             >
-              {{ item.title }}
+              {{ item.title }} {{ item.id }}
             </div>
             <div>{{ item.position }}</div>
           </div>
@@ -43,6 +56,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { clone } from "../../functions/helpers";
+
 export default {
   props: {
     elem: {
@@ -55,12 +70,16 @@ export default {
   },
   mounted() {},
   methods: {
-    ...mapActions(["settingOpen"]),
+    ...mapActions(["settingOpen", "setVersion"]),
+    settingChildOpen(item, type) {
+      this.settingOpen([item, type]);
+      this.setVersion();
+    },
   },
   computed: {
     ...mapGetters(["getSelected"]),
     settings() {
-      const elem = this.elem;
+      let elem = this.elem;
 
       return {
         align: elem.styles.align,
@@ -69,7 +88,34 @@ export default {
       };
     },
     items() {
-      return this.elem.items;
+      // const list = this.elem.items;
+
+      // list.forEach((h) => {
+      //   if (h.styles && h.styles.title) {
+      //     h.title_class = h.styles.title.typography;
+      //     h.title_color = h.styles.title.color;
+      //   }
+      //   if (h.styles && h.styles.content) {
+      //     h.content_class = h.styles.content.typography;
+      //     h.content_color = h.styles.content.color;
+      //   }
+      // });
+
+      // return list;
+
+      return this.elem.items.map((h) => {
+        if (h.child_styles && h.child_styles.title) {
+          h.title_class = h.child_styles.title.typography;
+          h.title_color = h.child_styles.title.color;
+        }
+
+        if (h.child_styles && h.child_styles.content) {
+          h.content_class = h.child_styles.content.typography;
+          h.content_color = h.child_styles.content.color;
+        }
+
+        return h;
+      });
     },
   },
 };

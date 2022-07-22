@@ -149,25 +149,32 @@ export default {
     ...mapGetters(["getSelected"]),
     settings() {
       const elem = this.getSelected;
+      const settings = {};
 
-      return {
-        design: {
-          background: elem.styles.background,
-          align: elem.styles.align,
-          boxShadow: elem.styles.boxShadow,
-          border: elem.styles.border,
-          spacing: elem.styles.spacing,
-          padding: elem.styles.padding,
-        },
-        content: {
-          layout: elem.settings.layout,
-          image: elem.settings.image,
-          title: elem.settings.title,
-          content: elem.settings.content,
-          btnText: elem.settings.btnText,
-          link: elem.settings.link,
-        },
-      };
+      if (elem) {
+        if (elem.styles) {
+          settings.design = {
+            background: elem.styles.background,
+            align: elem.styles.align,
+            boxShadow: elem.styles.boxShadow,
+            border: elem.styles.border,
+            spacing: elem.styles.spacing,
+            padding: elem.styles.padding,
+          };
+        }
+        if (elem.settings) {
+          settings.content = {
+            layout: elem.settings.layout,
+            image: elem.settings.image,
+            title: elem.settings.title,
+            content: elem.settings.content,
+            btnText: elem.settings.btnText,
+            link: elem.settings.link,
+          };
+        }
+      }
+
+      return settings;
     },
     styles() {},
   },

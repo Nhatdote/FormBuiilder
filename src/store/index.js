@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
-import { clone } from "../functions/helpers";
+import { clone, _typeof } from "../functions/helpers";
 
 const store = createStore({
   // plugins: [
@@ -13,12 +13,14 @@ const store = createStore({
       builders: [],
       selected: null,
       safeSelected: null,
+      version: 1,
     };
   },
   getters: {
     xBuilders: (state) => state.builders,
     getSelected: (state) => state.selected,
     getSafeSelected: (state) => state.safeSelected,
+    getVersion: (state) => state.version,
   },
   actions: {
     add: ({ commit }, item) => commit("add", item),
@@ -27,7 +29,8 @@ const store = createStore({
     set: ({ commit }, items) => commit("set", items),
     setSelect: ({ commit }, item) => commit("setSelect", item),
     setSafeSelect: ({ commit }, item) => commit("setSafeSelect", clone(item)),
-    settingOpen: ({ commit }, item) => commit("settingOpen", item),
+    settingOpen: ({ commit }, props) => commit("settingOpen", props),
+    setVersion: ({ commit }) => commit("setVersion"),
   },
   mutations: {
     add: (state, item) => state.builders.push(item),
@@ -44,10 +47,22 @@ const store = createStore({
     set: (state, items) => (state.builders = items),
     setSelect: (state, item) => (state.selected = item),
     setSafeSelect: (state, item) => (state.safeSelected = item),
-    settingOpen: (state, item) => {
-      state.selected = item;
-      state.safeSelected = clone(item);
+    settingOpen: (state, props) => {
+      //@todo, custom for elem's children
+      state.selected = null;
+      state.safeSelected = null;
+      if (_typeof(props) === "array") {
+        const item = props[0];
+        item.child_target = props[1];
+
+        state.selected = item;
+        state.safeSelected = clone(item);
+      } else {
+        state.selected = props;
+        state.safeSelected = clone(props);
+      }
     },
+    setVersion: (state) => state.version++,
   },
 });
 

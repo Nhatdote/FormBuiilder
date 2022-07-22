@@ -44,6 +44,7 @@
         </div>
 
         <draggable
+          v-show="!isEmptyBuilder"
           class="dragArea h-full w-full border p-2"
           item-key="id"
           :list="xBuilders"
@@ -77,6 +78,7 @@
           <component
             :is="getSelected.component_setting"
             @draft="settingDraft"
+            :version="getVersion"
           ></component>
 
           <div class="py-2 sticky bottom-0 bg-white">
@@ -148,13 +150,13 @@ export default {
   data() {
     return {
       elems: elems,
-      control: this.defaultControl(),
+      dragging: false,
       saving: false,
       isEmptyBuilder: true,
     };
   },
   mounted() {
-    this.isEmptyBuilder = !this.xBuilders.length && !this.control.dragging;
+    this.isEmptyBuilder = !this.xBuilders.length && !this.dragging;
   },
   methods: {
     ...mapActions([
@@ -166,27 +168,28 @@ export default {
       "setSafeSelect",
       "settingOpen",
     ]),
-    defaultControl() {
-      return {
-        dragging: false,
-        selected: null,
-      };
-    },
     onDragStart(elem) {
-      this.control = {
-        ...this.control,
-        dragging: true,
-        selected: elem,
-      };
+      this.dragging = true;
     },
     onClone(props) {
+      props = clone(props);
+
+      //@todo
+      let items = props.items;
+      if (items && Array.isArray(items)) {
+        props.items = items.map((h) => {
+          h.id = uuid();
+          return h;
+        });
+      }
+
       return {
-        ...this.control.selected,
+        ...props,
         id: uuid(),
       };
     },
     onDragEnd() {
-      this.control = this.defaultControl();
+      this.dragging = false;
     },
     settingSave() {
       this.saving = true;
@@ -229,12 +232,17 @@ export default {
     },
   },
   watch: {
-    "control.dragging"(val) {
+    dragging(val) {
       this.isEmptyBuilder = !this.xBuilders.length && !val;
     },
   },
   computed: {
-    ...mapGetters(["xBuilders", "getSelected", "getSafeSelected"]),
+    ...mapGetters([
+      "xBuilders",
+      "getSelected",
+      "getSafeSelected",
+      "getVersion",
+    ]),
   },
 };
 </script>
