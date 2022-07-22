@@ -48,7 +48,6 @@
           item-key="id"
           :list="xBuilders"
           group="builder"
-          @drop="onDrop"
         >
           <template #item="{ element }">
             <div
@@ -180,24 +179,7 @@ export default {
         selected: elem,
       };
     },
-    onDrop() {
-      return;
-      if (this.control && this.control.selected) {
-        this.add({
-          ...this.control.selected,
-          id: uuid(),
-        });
-      }
-
-      this.control = this.defaultControl();
-    },
     onClone(props) {
-      // if (this.control && this.control.selected) {
-      //   this.add({
-      //     ...this.control.selected,
-      //     id: uuid(),
-      //   });
-      // }
       return {
         ...this.control.selected,
         id: uuid(),
