@@ -44,7 +44,7 @@
               } ${item.title_color ? 'color: ' + item.title_color : ''}`"
               @click.stop="settingChildOpen(item, 'title')"
             >
-              {{ item.title }} {{ item.id }}
+              {{ item.title }}
             </div>
             <div>{{ item.position }}</div>
           </div>
@@ -72,7 +72,7 @@ export default {
   methods: {
     ...mapActions(["settingOpen", "setVersion"]),
     settingChildOpen(item, type) {
-      this.settingOpen([item, type]);
+      this.$store.commit("settingOpen", [item, type]);
       this.setVersion();
     },
   },

@@ -64,7 +64,7 @@
                 &times;
               </div>
               <component
-                @click="settingOpen(element)"
+                @click="$store.commit('settingOpen', element)"
                 :is="element.component"
                 :elem="element"
               ></component>

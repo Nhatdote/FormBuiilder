@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ Math.random() }}
     <div class="mb-3 flex">
       <color-picker
         v-model:pureColor="target.color"
