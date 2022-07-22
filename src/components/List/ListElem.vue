@@ -18,11 +18,13 @@
           </div>
           <div class="flex-grow ml-3 text-left">
             <div
-              class="font-bold builder-elem"
+              :class="`font-bold builder-elem ${
+                getSelected && item.id === getSelected.id ? 'active' : ''
+              }`"
               :style="`${
                 settings.color ? 'color: ' + settings.color + ';' : ''
               }`"
-              @click.stop="test"
+              @click.stop="settingOpen(item)"
             >
               {{ item.title }}
             </div>
@@ -35,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 export default {
   props: {
     elem: {
@@ -47,11 +50,10 @@ export default {
   },
   mounted() {},
   methods: {
-    test() {
-      alert(1);
-    },
+    ...mapActions(["settingOpen"]),
   },
   computed: {
+    ...mapGetters(["getSelected"]),
     settings() {
       const elem = this.elem;
 

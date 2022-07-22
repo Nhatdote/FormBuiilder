@@ -50,14 +50,13 @@
           v-else
           class="h-full w-full border p-2"
           item-key="id"
-          :list="builders"
-          @change="sort"
+          :list="xBuilders"
           @drop="onDrop"
         >
           <template #item="{ element }">
             <div
               :class="`builder-elem border border-dashed border-transparent relative ${
-                selected && element.id === selected.id ? 'active' : ''
+                getSelected && element.id === getSelected.id ? 'active' : ''
               }`"
             >
               <div
@@ -78,21 +77,14 @@
       </div>
 
       <div id="right" class="flex-shrink-0 w-1/6 p-2 bg-white text-left">
-        <div v-if="selected">
+        <div v-if="getSelected">
           <component
-            :is="selected.component_setting"
-            :elem="selected"
+            :is="getSelected.component_setting"
+            :elem="getSelected"
             @draft="settingDraft"
           ></component>
 
           <div class="py-2 sticky bottom-0 bg-white">
-            <div
-              class="text-red-500 text-sm py-2"
-              v-if="selected && selected.draft"
-            >
-              {{ "Thay đổi này chưa được lưu" }}
-            </div>
-
             <div class="flex gap-x-2">
               <button
                 @click="settingSave"
@@ -159,20 +151,24 @@ export default {
   data() {
     return {
       elems: elems,
-      builders: [],
       control: this.defaultControl(),
-      selected: null,
-      safeSelected: null,
       saving: false,
       isEmptyBuilder: true,
     };
   },
   mounted() {
-    this.isEmptyBuilder = !this.builders.length && !this.control.dragging;
-    this.builders = this.xBuilders;
+    this.isEmptyBuilder = !this.xBuilders.length && !this.control.dragging;
   },
   methods: {
-    ...mapActions(["set"]),
+    ...mapActions([
+      "set",
+      "add",
+      "update",
+      "remove",
+      "setSelect",
+      "setSafeSelect",
+      "settingOpen",
+    ]),
     defaultControl() {
       return {
         dragging: false,
@@ -188,7 +184,7 @@ export default {
     },
     onDrop() {
       if (this.control && this.control.selected) {
-        this.builders.push({
+        this.add({
           ...this.control.selected,
           id: uuid(),
         });
@@ -199,44 +195,26 @@ export default {
     onDragEnd() {
       this.control = this.defaultControl();
     },
-    settingOpen(item) {
-      this.selected = clone(item);
-      this.safeSelected = clone(item);
-    },
+    // settingOpen(item) {
+    //   this.setSelect(item);
+    //   this.setSafeSelect(item);
+    // },
     settingSave() {
       this.saving = true;
-
-      this.safeSelected = this.builders.find(
-        (h) => h.id === this.safeSelected.id
-      );
-      this.selected = this.builders.find((h) => h.id === this.safeSelected.id);
+      this.setSafeSelect(this.getSelected);
 
       setTimeout((h) => {
         this.saving = false;
       }, 1000);
     },
     settingCancel() {
-      this.builders = this.builders.map((h) => {
-        if (h.id === this.selected.id) {
-          h = this.safeSelected;
-        }
-
-        return h;
+      this.update({
+        item: this.getSelected,
+        data: clone(this.getSafeSelected),
       });
-
-      this.selected = clone(this.safeSelected);
     },
     settingDraft(val) {
-      this.builders = this.builders.map((h) => {
-        if (h.id === this.selected.id) {
-          h = {
-            ...h,
-            ...val,
-          };
-        }
-
-        return h;
-      });
+      Object.assign(this.getSelected, val);
     },
     sort(items) {
       console.log(this.builders);
@@ -246,15 +224,15 @@ export default {
         return;
       }
 
-      if (this.selected && this.selected.id === item.id) {
-        this.selected = null;
+      if (this.getSelected && this.getSelected.id === item.id) {
+        this.setSelect(null);
       }
 
-      this.builders = this.builders.filter((h) => h !== item);
+      this.remove(item);
       this.updateEmpty();
     },
     updateEmpty() {
-      if (this.builders.length) {
+      if (this.xBuilders.length) {
         this.isEmptyBuilder = false;
       } else {
         this.isEmptyBuilder = true;
@@ -263,17 +241,11 @@ export default {
   },
   watch: {
     "control.dragging"(val) {
-      this.isEmptyBuilder = !this.builders.length && !val;
-    },
-    builders: {
-      handler(val) {
-        this.set(val);
-      },
-      deep: true,
+      this.isEmptyBuilder = !this.xBuilders.length && !val;
     },
   },
   computed: {
-    ...mapGetters(["xBuilders"]),
+    ...mapGetters(["xBuilders", "getSelected", "getSafeSelected"]),
   },
 };
 </script>
