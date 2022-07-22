@@ -12,8 +12,10 @@
     <div class="flex-grow flex gap-3">
       <div id="side" class="flex-shrink-0 w-1/6 pl-3">
         <draggable
-          class="grid grid-cols-2 gap-2 list-group"
+          class="dragArea grid grid-cols-2 gap-2 list-group"
           :list="elems"
+          :group="{ name: 'builder', pull: 'clone', put: false }"
+          :clone="onClone"
           item-key="id"
         >
           <template #item="{ element }">
@@ -32,13 +34,8 @@
         </draggable>
       </div>
 
-      <div
-        id="main"
-        class="flex-grow p-2 bg-white"
-        @dragenter="control.dragging = true"
-        @dragleave="control.dragging = false"
-      >
-        <div class="h-full w-full flex items-center" v-if="isEmptyBuilder">
+      <div id="main" class="flex-grow p-2 bg-white">
+        <div class="h-full w-full flex items-center" v-show="isEmptyBuilder">
           <div
             class="border border-dashed border-4 text-center w-full h-60 flex items-center justify-center"
           >
@@ -47,10 +44,10 @@
         </div>
 
         <draggable
-          v-else
-          class="h-full w-full border p-2"
+          class="dragArea h-full w-full border p-2"
           item-key="id"
           :list="xBuilders"
+          group="builder"
           @drop="onDrop"
         >
           <template #item="{ element }">
@@ -80,7 +77,6 @@
         <div v-if="getSelected">
           <component
             :is="getSelected.component_setting"
-            :elem="getSelected"
             @draft="settingDraft"
           ></component>
 
@@ -129,6 +125,7 @@ import FeatureElem from "./components/Feature/FeatureElem.vue";
 import FeatureSetting from "./components/Feature/FeatureSetting.vue";
 import ListElem from "./components/List/ListElem.vue";
 import ListSetting from "./components/List/ListSetting.vue";
+import SimpleTextSetting from "./components/SimpleText/SimpleTextSetting.vue";
 
 export default {
   components: {
@@ -147,6 +144,7 @@ export default {
     ClipboardListIcon,
     ListElem,
     ListSetting,
+    SimpleTextSetting,
   },
   data() {
     return {
@@ -183,6 +181,7 @@ export default {
       };
     },
     onDrop() {
+      return;
       if (this.control && this.control.selected) {
         this.add({
           ...this.control.selected,
@@ -192,13 +191,21 @@ export default {
 
       this.control = this.defaultControl();
     },
+    onClone(props) {
+      // if (this.control && this.control.selected) {
+      //   this.add({
+      //     ...this.control.selected,
+      //     id: uuid(),
+      //   });
+      // }
+      return {
+        ...this.control.selected,
+        id: uuid(),
+      };
+    },
     onDragEnd() {
       this.control = this.defaultControl();
     },
-    // settingOpen(item) {
-    //   this.setSelect(item);
-    //   this.setSafeSelect(item);
-    // },
     settingSave() {
       this.saving = true;
       this.setSafeSelect(this.getSelected);

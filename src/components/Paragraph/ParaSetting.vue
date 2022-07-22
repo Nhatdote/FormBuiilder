@@ -1,12 +1,11 @@
 <template>...</template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
-  props: {
-    elem: {
-      type: Object,
-      default: () => {},
-    },
+  props: {},
+  computed: {
+    ...mapGetters(["getSelected"]),
   },
 };
 </script>

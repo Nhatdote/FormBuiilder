@@ -103,15 +103,10 @@
 <script>
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   components: { ColorPicker },
-  props: {
-    elem: {
-      type: Object,
-      default: () => {},
-    },
-  },
   data() {
     return {
       activeTab: "content",
@@ -127,6 +122,7 @@ export default {
     this.init();
   },
   methods: {
+    ...mapActions(["update"]),
     init() {
       const settings = this.settings;
       this.content = {
@@ -143,10 +139,10 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(["getSelected"]),
     settings() {
-      const elem = this.elem;
+      const elem = this.getSelected;
       const data = {};
-      data.name = elem.name;
 
       if (elem.settings) {
         const settings = elem.settings;
@@ -192,7 +188,7 @@ export default {
       },
       deep: true,
     },
-    elem(val) {
+    getSelected() {
       this.init();
     },
   },

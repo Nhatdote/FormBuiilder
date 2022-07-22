@@ -15,97 +15,94 @@
     <div class="tab-content">
       <div v-if="activeTab === 'design'">
         <div class="mb-3">
-          <label for="align">{{ "Alignment" }}</label>
-          <select
-            class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.align"
-          >
-            <option value="left">{{ "Left" }}</option>
-            <option value="center">{{ "Center" }}</option>
-            <option value="right">{{ "Right" }}</option>
-            <option value="justify">{{ "Justify" }}</option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="font_style">{{ "Spacing" }}</label>
-          <input
-            class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.spacing"
+          <color-picker
+            v-model:pureColor="getSelected.styles.bgColor"
+            useType="pure"
+            disableHistory
+            shape="circle"
+            lang="en"
           />
+          <label for="background" class="ml-2">{{ "Background" }}</label>
         </div>
 
         <div class="mb-3">
-          <label for="color">{{ "Box Shadow" }}</label>
-          <br />
+          <label for="border" class="ml-2">{{ "Border" }}</label>
           <select
-            v-model="design.boxShadow"
+            v-model="getSelected.styles.border"
             class="block w-full border border-gray-500 rounded-md p-2"
           >
-            <option value="shadow-sm">sm</option>
-            <option value="shadow-md">md</option>
-            <option value="shadow-lg">lg</option>
+            <option v-for="index in 4" :value="index" :key="index">
+              {{ index }}px
+            </option>
           </select>
         </div>
       </div>
 
       <div v-else>
-        <div class="mb-3">
-          <label for="content">{{ "Layout" }}</label>
-          <select
-            class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="content.layout"
-          >
-            <option v-for="index in 4" :value="index" :key="index">
-              Layout {{ index }}
-            </option>
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="link">{{ "Image" }}</label>
-          <div class="grid grid-cols-2 gap-2">
-            <div
-              v-for="(img, i) in images"
-              :key="i"
-              :class="content.image === img ? 'border-2 border-red-400' : ''"
-            >
-              <img :src="img" alt="" @click="content.image = img" />
+        <div
+          v-for="item in getSelected.items"
+          :key="item.id"
+          class="border p-2 rounded-md shadow-sm mb-2"
+        >
+          <div class="flex list-user">
+            <div class="font-bold flex-grow" @click="toggleCollapse(item)">
+              {{ item.title }}
+            </div>
+            <div class="flex-shrink-0 list-user-actions">
+              <DuplicateIcon
+                class="w-6 h-6 p-1 text-green-600"
+                @click="userClone(item)"
+              />
+              <TrashIcon
+                class="w-6 h-6 p-1 text-red-600"
+                @click="userDelete(item)"
+              />
+              <MenuAlt4Icon class="w-6 h-6 p-1 text-gray-400" />
+            </div>
+          </div>
+          <div v-show="item.id === collapse" class="transition-all">
+            <div class="mb-2">
+              <label for="title" class="text-sm">{{ "Name" }}</label>
+              <input
+                type="text"
+                class="block w-full border border-gray-500 rounded-md p-2"
+                v-model="item.title"
+              />
+            </div>
+            <div class="mb-2">
+              <label for="avatar" class="text-sm">{{ "Avatar" }}</label>
+              <div class="grid grid-cols-4 gap-2">
+                <div
+                  v-for="(img, i) in images"
+                  :key="i"
+                  :class="item.avatar === img ? 'border-2 border-red-400' : ''"
+                >
+                  <img :src="img" alt="" @click="item.avatar = img" />
+                </div>
+              </div>
+            </div>
+            <div class="mb-2">
+              <label for="position" class="text-sm">{{ "Position" }}</label>
+              <input
+                type="text"
+                class="block w-full border border-gray-500 rounded-md p-2"
+                v-model="item.position"
+              />
+            </div>
+            <div class="mb-2">
+              <label for="content" class="text-sm">{{ "Content" }}</label>
+              <textarea
+                type="text"
+                class="block w-full border border-gray-500 rounded-md p-2"
+                rows="5"
+                v-model="item.content"
+              ></textarea>
             </div>
           </div>
         </div>
 
-        <div class="mb-3">
-          <label for="tag">{{ "Title" }}</label>
-          <input
-            v-model="content.title"
-            class="block w-full border border-gray-500 rounded-md p-2"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label for="tag">{{ "Content" }}</label>
-          <textarea
-            v-model="content.content"
-            class="block w-full border border-gray-500 rounded-md p-2"
-          >
-          </textarea>
-        </div>
-
-        <div class="mb-3">
-          <label for="tag">{{ "Btn text" }}</label>
-          <input
-            v-model="content.btnText"
-            class="block w-full border border-gray-500 rounded-md p-2"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label for="tag">{{ "Btn Link" }}</label>
-          <input
-            v-model="content.link"
-            class="block w-full border border-gray-500 rounded-md p-2"
-          />
+        <div class="text-blue-500 font-bold cursor-pointer" @click="userAdd">
+          {{ "+ Add item" }}
         </div>
       </div>
     </div>
@@ -115,17 +112,15 @@
 <script>
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
+import { mapGetters } from "vuex";
+import { uuid } from "../../functions/helpers";
+import { DuplicateIcon, TrashIcon, MenuAlt4Icon } from "@heroicons/vue/outline";
 
 export default {
-  components: { ColorPicker },
-  props: {
-    elem: {
-      type: Object,
-      default: () => {},
-    },
-  },
+  components: { ColorPicker, DuplicateIcon, TrashIcon, MenuAlt4Icon },
   data() {
     return {
+      collapse: null,
       activeTab: "content",
       tabs: [
         { id: "content", label: "Content" },
@@ -134,10 +129,14 @@ export default {
       content: {},
       design: {},
       images: [
-        "https://images.unsplash.com/photo-1553095066-5014bc7b7f2d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8d2FsbCUyMGJhY2tncm91bmR8ZW58MHx8MHx8&w=1000&q=80",
-        "https://img.freepik.com/free-photo/top-view-background-beautiful-white-grey-brown-cream-blue-background_140725-72219.jpg",
-        "https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/v960-ning-30.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=63dd5f402645ef52fb7dfb592aec765a",
-        "https://media.istockphoto.com/photos/forest-wooden-table-background-summer-sunny-meadow-with-green-grass-picture-id1353553203?b=1&k=20&m=1353553203&s=170667a&w=0&h=QTyTGI9tWQluIlkmwW0s7Q4z7R_IT8egpzzHjW3cSas=",
+        "https://thumbs.dreamstime.com/b/funny-cartoon-monster-face-vector-square-avatar-halloween-175916751.jpg",
+        "https://thumbs.dreamstime.com/b/cute-monster-face-square-avatar-vector-stock-cute-monster-face-square-avatar-114650081.jpg",
+        "https://thumbs.dreamstime.com/b/cartoon-monster-face-vector-halloween-happy-monster-square-avatar-funny-monster-mask-blue-design-t-shirt-sticker-print-97157979.jpg",
+        "https://previews.123rf.com/images/juristka/juristka1705/juristka170500007/77884667-cartoon-monster-face-vector-halloween-blue-smiling-fairy-tale-avatar-vector-illustration-.jpg",
+        "https://as1.ftcdn.net/v2/jpg/01/93/12/70/1000_F_193127021_CH25xxBJmcBtWJ3TS6oK70IHDfI4vNLy.jpg",
+        "https://media.istockphoto.com/vectors/cartoon-monster-face-vector-halloween-pink-monster-avatar-vector-id610668770?k=20&m=610668770&s=170667a&w=0&h=QfeALgkZMc6HNRc2P4QvEhCC_TXf_GgMlQ4CT6ghCmk=",
+        "https://media.istockphoto.com/vectors/funny-cartoon-monster-face-vector-monster-square-avatar-vector-id1212937699?k=20&m=1212937699&s=170667a&w=0&h=qvoSZ28QKOdtTi74dOgGAw_egmlIBWe66tJxlPCH26A=",
+        "https://img.myloview.com/stickers/funny-cartoon-monster-face-vector-monster-square-avatar-400-205411727.jpg",
       ],
     };
   },
@@ -145,33 +144,84 @@ export default {
     this.init();
   },
   methods: {
+    toggleCollapse(item) {
+      if (this.collapse && this.collapse === item.id) {
+        this.collapse = null;
+        return;
+      }
+
+      this.collapse = item.id;
+    },
     init() {
       const settings = this.settings;
       this.content = settings.content;
       this.design = settings.design;
     },
+    userAdd() {
+      const uid = uuid();
+      this.getSelected.items.push({
+        id: uid,
+        component_setting: "SimpleTextSetting",
+        avatar: null,
+        title: "Name " + uid,
+        position: "Position " + uid,
+        content:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ",
+      });
+    },
+    userClone(item) {
+      const newItem = {
+        ...item,
+        id: uuid(),
+        title: item.title + " copy",
+      };
+
+      let items = this.getSelected.items;
+      let pos = items.findIndex((h) => h === item);
+      if (!pos) {
+        this.getSelected.items.push(newItem);
+      } else {
+        pos = pos + 1;
+        items = [...items.slice(0, pos), newItem, ...items.slice(pos)];
+        this.getSelected.items = items;
+      }
+    },
+    userDelete(item) {
+      this.getSelected.items = this.getSelected.items.filter((h) => h !== item);
+    },
   },
   computed: {
+    ...mapGetters(["getSelected"]),
     settings() {
-      const elem = this.elem;
+      const elem = this.getSelected;
+      const design = {};
+      const content = {};
 
-      return {
-        design: {
+      if (elem.styles) {
+        Object.assign(design, {
           background: elem.styles.background,
           align: elem.styles.align,
           boxShadow: elem.styles.boxShadow,
           border: elem.styles.border,
           spacing: elem.styles.spacing,
           padding: elem.styles.padding,
-        },
-        content: {
+        });
+      }
+
+      if (elem.settings) {
+        Object.assign(content, {
           layout: elem.settings.layout,
           image: elem.settings.image,
           title: elem.settings.title,
           content: elem.settings.content,
           btnText: elem.settings.btnText,
           link: elem.settings.link,
-        },
+        });
+      }
+
+      return {
+        design: design,
+        content: content,
       };
     },
     styles() {},
@@ -193,7 +243,7 @@ export default {
       },
       deep: true,
     },
-    elem(val) {
+    getSelected(val) {
       this.init();
     },
   },
@@ -205,6 +255,16 @@ export default {
   border-bottom: 3px solid transparent;
   &.active {
     border-color: red;
+  }
+}
+.list-user {
+  .list-user-actions {
+    display: none;
+  }
+  &:hover {
+    .list-user-actions {
+      display: flex;
+    }
   }
 }
 </style>

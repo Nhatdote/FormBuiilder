@@ -22,7 +22,7 @@ const store = createStore({
   },
   actions: {
     add: ({ commit }, item) => commit("add", item),
-    update: ({ commit }, item, data) => commit("update", item, data),
+    update: ({ commit }, props) => commit("update", props),
     remove: ({ commit }, item) => commit("remove", item),
     set: ({ commit }, items) => commit("set", items),
     setSelect: ({ commit }, item) => commit("setSelect", item),
@@ -39,7 +39,8 @@ const store = createStore({
         }
       });
     },
-    remove: (state, item) => state.builders.filter((h) => h !== item),
+    remove: (state, item) =>
+      (state.builders = state.builders.filter((h) => h !== item)),
     set: (state, items) => (state.builders = items),
     setSelect: (state, item) => (state.selected = item),
     setSafeSelect: (state, item) => (state.safeSelected = item),

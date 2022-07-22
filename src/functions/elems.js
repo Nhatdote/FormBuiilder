@@ -98,6 +98,7 @@ const elems = [
       color: "black",
       property: null,
       align: "center",
+      bgColor: "#ffffff",
     },
     component: "ListElem",
     component_setting: "ListSetting",

@@ -1,5 +1,10 @@
 <template>
-  <div :class="`bg-white p-2`">
+  <div
+    class="p-2"
+    :style="`background-color: ${elem.styles.bgColor || 'white'}; ${
+      elem.styles.border ? 'border: ' + elem.styles.border + 'px solid' : ''
+    }`"
+  >
     <div class="grid grid-cols-3 gap-8">
       <div v-for="(item, i) in items" :key="i">
         <div
