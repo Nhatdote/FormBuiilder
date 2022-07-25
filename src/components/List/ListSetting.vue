@@ -104,8 +104,12 @@
               v-model="getSelected.styles.border_radius"
             >
               <option value="0">None</option>
-              <option v-for="index in 10" :value="`${index}px`" :key="index">
-                {{ index }} Radius
+              <option
+                v-for="radius in borderRadius"
+                :key="radius"
+                :value="radius"
+              >
+                {{ radius }}
               </option>
             </select>
           </div>
@@ -162,7 +166,7 @@
                       v-for="(img, i) in images"
                       :key="i"
                       :class="
-                        element.avatar === img ? 'border-2 border-red-400' : ''
+                        element.avatar === img ? 'border-4 border-red-400' : ''
                       "
                     >
                       <img :src="img" alt="" @click="element.avatar = img" />
@@ -203,7 +207,12 @@
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { mapGetters } from "vuex";
-import { avatars, uuid, alignments } from "../../functions/helpers";
+import {
+  avatars,
+  uuid,
+  alignments,
+  borderRadius,
+} from "../../functions/helpers";
 import { DuplicateIcon, TrashIcon, MenuAlt4Icon } from "@heroicons/vue/outline";
 import draggable from "vuedraggable";
 
@@ -226,6 +235,7 @@ export default {
       images: avatars,
       bgColor: "white",
       alignments,
+      borderRadius,
     };
   },
   mounted() {},

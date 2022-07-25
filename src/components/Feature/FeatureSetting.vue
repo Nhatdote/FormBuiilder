@@ -38,6 +38,17 @@
           />
         </div>
 
+        <div class="mb-3 flex">
+          <color-picker
+            v-model:pureColor="getSelected.styles.background"
+            useType="pure"
+            disableHistory
+            shape="circle"
+            lang="en"
+          />
+          <label for="background">Background</label>
+        </div>
+
         <div class="mb-3">
           <label for="color">{{ "Box Shadow" }}</label>
           <br />
@@ -88,8 +99,12 @@
               v-model="getSelected.styles.border_radius"
             >
               <option value="0">None</option>
-              <option v-for="index in 10" :value="`${index}px`" :key="index">
-                {{ index }} Radius
+              <option
+                v-for="radius in borderRadius"
+                :key="radius"
+                :value="radius"
+              >
+                {{ radius }}
               </option>
             </select>
           </div>
@@ -115,7 +130,11 @@
             <div
               v-for="(img, i) in images"
               :key="i"
-              :class="content.image === img ? 'border-2 border-red-400' : ''"
+              :class="
+                getSelected.settings.image === img
+                  ? 'border-4 border-red-400'
+                  : ''
+              "
             >
               <img
                 :src="img"
@@ -167,13 +186,14 @@
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { mapGetters } from "vuex";
-import { alignments } from "../../functions/helpers";
+import { alignments, borderRadius } from "../../functions/helpers";
 
 export default {
   components: { ColorPicker },
   data() {
     return {
       alignments,
+      borderRadius,
       activeTab: "content",
       tabs: [
         { id: "content", label: "Content" },

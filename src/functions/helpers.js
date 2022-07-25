@@ -21,4 +21,17 @@ const alignments = [
   { id: "justify", label: "Justify" },
 ];
 
-export { uuid, clone, _typeof, avatars, alignments };
+const borderRadius = [
+  "3px",
+  "4px",
+  "5px",
+  "10px",
+  "12px",
+  "15px",
+  "20px",
+  "25px",
+  "30px",
+  "50%",
+];
+
+export { uuid, clone, _typeof, avatars, alignments, borderRadius };

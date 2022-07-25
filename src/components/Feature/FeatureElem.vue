@@ -90,6 +90,8 @@ export default {
       const rightCss = [];
       styles.padding && rightCss.push(`padding: ${styles.padding}px`);
       styles.align && rightCss.push(`text-align: ${styles.align}`);
+      styles.background &&
+        rightCss.push(`background-color: ${styles.background}`);
 
       return {
         wrap: wrapCss.join(";"),
