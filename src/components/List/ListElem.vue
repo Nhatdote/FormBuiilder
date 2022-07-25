@@ -110,9 +110,9 @@ export default {
           wrapCss.push(`border-style: ${styles.border_style}`);
         styles.border_color &&
           wrapCss.push(`border-color: ${styles.border_color}`);
-        styles.border_radius &&
-          wrapCss.push(`border-radius: ${styles.border_radius}`);
       }
+      styles.border_radius &&
+        wrapCss.push(`border-radius: ${styles.border_radius}`);
 
       const contentCss = [];
       styles.align && contentCss.push(`text-align: ${styles.align}`);
