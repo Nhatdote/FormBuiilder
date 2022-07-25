@@ -5,12 +5,14 @@
   ></div>
 
   <div class="flex flex-col w-full min-h-screen shado gap-3 bg-gray-100">
-    <div id="header" class="flex justify-between p-2 border-b bg-white">
-      <ShoppingCartIcon class="text-green-600 h-10 w-10" />
+    <div id="header" class="flex justify-between p-3 border-b bg-white">
+      <img :src="Logo" alt="" style="height: 40px" />
       <button
-        class="pointer-events-auto rounded-md bg-indigo-600 py-2 px-3 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500"
+        @click="exportJSON"
+        class="flex align-items-center pointer-events-auto rounded-md bg-indigo-600 py-2 px-3 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500"
       >
-        Import/Export
+        <DownloadIcon class="h-5" />
+        <span class="ml-2">Export</span>
       </button>
     </div>
 
@@ -124,6 +126,7 @@ import {
   CubeIcon,
   ClipboardListIcon,
   SwitchVerticalIcon,
+  DownloadIcon,
 } from "@heroicons/vue/outline";
 import draggable from "vuedraggable";
 import elems from "./functions/elems";
@@ -140,6 +143,8 @@ import ListSetting from "./components/List/ListSetting.vue";
 import SimpleTextSetting from "./components/SimpleText/SimpleTextSetting.vue";
 import SpacingElem from "./components/Spacing/SpacingElem.vue";
 import SpacingSetting from "./components/Spacing/SpacingSetting.vue";
+import Logo from "./images/logo.png";
+import downloadjs from "downloadjs";
 
 export default {
   components: {
@@ -148,6 +153,7 @@ export default {
     FlagIcon,
     MenuAlt1Icon,
     SwitchVerticalIcon,
+    DownloadIcon,
     draggable,
     HeadingElem,
     HeadingSetting,
@@ -165,6 +171,7 @@ export default {
   },
   data() {
     return {
+      Logo,
       elems: elems,
       dragging: false,
       saving: false,
@@ -256,6 +263,14 @@ export default {
       } else {
         this.isEmptyBuilder = true;
       }
+    },
+    exportJSON() {
+      const time = new Date().getTime();
+      downloadjs(
+        JSON.stringify(this.xBuilders),
+        `${time}_builders.json`,
+        "text/plain"
+      );
     },
   },
   watch: {
