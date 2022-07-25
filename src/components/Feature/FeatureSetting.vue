@@ -18,7 +18,7 @@
           <label for="align">{{ "Alignment" }}</label>
           <select
             class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.align"
+            v-model="getSelected.styles.align"
           >
             <option value="left">{{ "Left" }}</option>
             <option value="center">{{ "Center" }}</option>
@@ -30,7 +30,7 @@
           <label for="font_style">{{ "Spacing" }}</label>
           <input
             class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.spacing"
+            v-model="getSelected.styles.spacing"
           />
         </div>
 
@@ -38,13 +38,57 @@
           <label for="color">{{ "Box Shadow" }}</label>
           <br />
           <select
-            v-model="design.boxShadow"
+            v-model="getSelected.styles.boxShadow"
             class="block w-full border border-gray-500 rounded-md p-2"
           >
-            <option value="shadow-sm">sm</option>
-            <option value="shadow-md">md</option>
-            <option value="shadow-lg">lg</option>
+            <option value="shadow-sm">Small</option>
+            <option value="shadow-md">Medium</option>
+            <option value="shadow-lg">Large</option>
           </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="border">Border</label>
+          <div class="flex gap-2 items-center w-100">
+            <select
+              style="width: 55px"
+              class="block border border-gray-500 rounded-md p-1"
+              v-model="getSelected.styles.border_width"
+            >
+              <option value="">None</option>
+              <option v-for="index in 5" :value="`${index}px`" :key="index">
+                {{ index }}px
+              </option>
+            </select>
+
+            <select
+              class="block border border-gray-500 rounded-md p-1 flex-grow"
+              v-model="getSelected.styles.border_style"
+            >
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+            </select>
+
+            <color-picker
+              v-model:pureColor="getSelected.styles.border_color"
+              useType="pure"
+              disableHistory
+              shape="circle"
+              lang="en"
+            />
+
+            <select
+              style="width: 55px"
+              class="block border border-gray-500 rounded-md p-1"
+              v-model="getSelected.styles.border_radius"
+            >
+              <option value="0">None</option>
+              <option v-for="index in 10" :value="`${index}px`" :key="index">
+                {{ index }} Radius
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -53,7 +97,7 @@
           <label for="content">{{ "Layout" }}</label>
           <select
             class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="content.layout"
+            v-model="getSelected.settings.layout"
           >
             <option v-for="index in 4" :value="index" :key="index">
               Layout {{ index }}
@@ -69,7 +113,11 @@
               :key="i"
               :class="content.image === img ? 'border-2 border-red-400' : ''"
             >
-              <img :src="img" alt="" @click="content.image = img" />
+              <img
+                :src="img"
+                alt=""
+                @click="getSelected.settings.image = img"
+              />
             </div>
           </div>
         </div>
@@ -77,7 +125,7 @@
         <div class="mb-3">
           <label for="tag">{{ "Title" }}</label>
           <input
-            v-model="content.title"
+            v-model="getSelected.settings.title"
             class="block w-full border border-gray-500 rounded-md p-2"
           />
         </div>
@@ -85,7 +133,7 @@
         <div class="mb-3">
           <label for="tag">{{ "Content" }}</label>
           <textarea
-            v-model="content.content"
+            v-model="getSelected.settings.content"
             class="block w-full border border-gray-500 rounded-md p-2"
           >
           </textarea>
@@ -94,7 +142,7 @@
         <div class="mb-3">
           <label for="tag">{{ "Btn text" }}</label>
           <input
-            v-model="content.btnText"
+            v-model="getSelected.settings.btnText"
             class="block w-full border border-gray-500 rounded-md p-2"
           />
         </div>
@@ -102,7 +150,7 @@
         <div class="mb-3">
           <label for="tag">{{ "Btn Link" }}</label>
           <input
-            v-model="content.link"
+            v-model="getSelected.settings.link"
             class="block w-full border border-gray-500 rounded-md p-2"
           />
         </div>
@@ -135,70 +183,12 @@ export default {
       ],
     };
   },
-  mounted() {
-    this.init();
-  },
-  methods: {
-    init() {
-      const settings = this.settings;
-      this.content = settings.content;
-      this.design = settings.design;
-    },
-  },
+  mounted() {},
+  methods: {},
   computed: {
     ...mapGetters(["getSelected"]),
-    settings() {
-      const elem = this.getSelected;
-      const settings = {};
-
-      if (elem) {
-        if (elem.styles) {
-          settings.design = {
-            background: elem.styles.background,
-            align: elem.styles.align,
-            boxShadow: elem.styles.boxShadow,
-            border: elem.styles.border,
-            spacing: elem.styles.spacing,
-            padding: elem.styles.padding,
-          };
-        }
-        if (elem.settings) {
-          settings.content = {
-            layout: elem.settings.layout,
-            image: elem.settings.image,
-            title: elem.settings.title,
-            content: elem.settings.content,
-            btnText: elem.settings.btnText,
-            link: elem.settings.link,
-          };
-        }
-      }
-
-      return settings;
-    },
-    styles() {},
   },
-  watch: {
-    content: {
-      handler(val) {
-        this.$emit("draft", {
-          settings: val,
-        });
-      },
-      deep: true,
-    },
-    design: {
-      handler(val) {
-        this.$emit("draft", {
-          styles: val,
-        });
-      },
-      deep: true,
-    },
-    getSelected() {
-      this.init();
-    },
-  },
+  watch: {},
 };
 </script>
 

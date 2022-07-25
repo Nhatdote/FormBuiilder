@@ -18,7 +18,7 @@
           <label for="align">{{ "Alignment" }}</label>
           <select
             class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.align"
+            v-model="getSelected.styles.align"
           >
             <option value="left">{{ "Left" }}</option>
             <option value="center">{{ "Center" }}</option>
@@ -30,7 +30,7 @@
           <label for="font_style">{{ "Font style" }}</label>
           <select
             class="block w-full border border-gray-500 rounded-md p-2"
-            v-model="design.property"
+            v-model="getSelected.styles.property"
           >
             <option value="normal">{{ "Normal" }}</option>
             <option value="italic">{{ "Italic" }}</option>
@@ -39,16 +39,15 @@
           </select>
         </div>
 
-        <div class="mb-3">
-          <label for="color">{{ "Text color" }}</label>
-          <br />
+        <div class="mb-3 flex">
           <color-picker
-            v-model:pureColor="design.color"
+            v-model:pureColor="getSelected.styles.color"
             useType="pure"
             disableHistory
             shape="circle"
             lang="en"
           />
+          <label for="color">{{ "Text color" }}</label>
         </div>
 
         <div class="mb-3 hidden">
@@ -70,7 +69,7 @@
           <textarea
             cols="30"
             rows="5"
-            v-model="content.content"
+            v-model="getSelected.settings.content"
             class="block w-full border border-gray-500 rounded-md p-2"
           ></textarea>
         </div>
@@ -79,7 +78,7 @@
           <label for="link">{{ "Link" }}</label>
           <input
             type="text"
-            v-model="content.link"
+            v-model="getSelected.settings.link"
             class="block w-full border border-gray-500 rounded-md p-2"
           />
         </div>
@@ -87,7 +86,7 @@
         <div class="mb-3">
           <label for="tag">{{ "Tag name" }}</label>
           <select
-            v-model="content.tag"
+            v-model="getSelected.settings.tag"
             class="block w-full border border-gray-500 rounded-md p-2"
           >
             <option v-for="index in 6" :value="`h${index}`" :key="index">
@@ -103,7 +102,7 @@
 <script>
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   components: { ColorPicker },
@@ -118,80 +117,12 @@ export default {
       design: {},
     };
   },
-  mounted() {
-    this.init();
-  },
-  methods: {
-    ...mapActions(["update"]),
-    init() {
-      const settings = this.settings;
-      this.content = {
-        content: settings.content,
-        link: settings.link,
-        tag: settings.tag,
-      };
-      this.design = {
-        align: settings.align,
-        property: settings.property,
-        color: settings.color,
-        text_shadow: settings.text_shadow,
-      };
-    },
-  },
+  mounted() {},
+  methods: {},
   computed: {
     ...mapGetters(["getSelected"]),
-    settings() {
-      const elem = this.getSelected;
-      const data = {};
-
-      if (elem && elem.settings) {
-        const settings = elem.settings;
-        data.tag = settings.tag || "h1";
-        data.content = settings.content || elem.desc || elem.label;
-        data.link = settings.link || null;
-      }
-
-      if (elem && elem.styles) {
-        const styles = elem.styles;
-        data.align = styles.align || "left";
-        data.property = styles.property || "normal";
-        data.color = styles.color || "black";
-        data.text_shadow = styles.text_shadow || "null";
-      }
-
-      return data;
-    },
   },
-  watch: {
-    content: {
-      handler(val) {
-        this.$emit("draft", {
-          settings: {
-            content: val.content,
-            tag: val.tag,
-            link: val.link,
-          },
-        });
-      },
-      deep: true,
-    },
-    design: {
-      handler(val) {
-        this.$emit("draft", {
-          styles: {
-            align: val.align,
-            property: val.property,
-            color: val.color,
-            text_shadow: val.text_shadow,
-          },
-        });
-      },
-      deep: true,
-    },
-    getSelected() {
-      this.init();
-    },
-  },
+  watch: {},
 };
 </script>
 

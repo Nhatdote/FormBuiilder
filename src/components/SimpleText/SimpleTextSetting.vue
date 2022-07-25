@@ -2,7 +2,7 @@
   <div>
     <div class="mb-3 flex">
       <color-picker
-        v-model:pureColor="target.color"
+        v-model:pureColor="settings[target + '_color']"
         useType="pure"
         disableHistory
         shape="circle"
@@ -14,9 +14,10 @@
     <div class="mb-3">
       <label for="color">{{ "Typography" }}</label>
       <select
-        v-model="target.typography"
+        v-model="settings[target + '_typography']"
         class="block w-full border border-gray-500 rounded-md p-2"
       >
+        <option value="">{{ "None" }}</option>
         <option value="font-bold">{{ "Bold" }}</option>
         <option value="italic">{{ "Italic" }}</option>
         <option value="line-through">{{ "Line through" }}</option>
@@ -29,6 +30,7 @@
 <script>
 import { ColorPicker } from "vue3-colorpicker";
 import { mapGetters } from "vuex";
+import { clone } from "../../functions/helpers";
 
 export default {
   components: {
@@ -42,7 +44,8 @@ export default {
   },
   data() {
     return {
-      target: {},
+      target: "title",
+      settings: {},
     };
   },
   mounted() {
@@ -50,24 +53,46 @@ export default {
   },
   methods: {
     init() {
-      this.target =
-        this.getSelected.child_styles[this.getSelected.child_target] || {};
+      const item = this.getSelected;
+      const target = item.child_target;
+      const elem = this.getMainElem(item);
+
+      this.target = target;
+      this.settings = {
+        [target + "_color"]: elem ? elem.styles[target + "_color"] : null,
+        [target + "_typography"]: elem
+          ? elem.styles[target + "_typography"]
+          : null,
+      };
+    },
+    getMainElem(item) {
+      if (!item) {
+        var item = this.getSelected;
+      }
+      const builders = this.xBuilders;
+
+      return builders.find((h) => h.id === item.parent_id);
     },
   },
   computed: {
-    ...mapGetters(["getSelected"]),
+    ...mapGetters(["getSelected", "xBuilders"]),
   },
   watch: {
     version() {
       this.init();
     },
-    target: {
+    settings: {
       handler(val) {
-        this.$emit("draft", {
-          child_styles: {
-            ...this.getSelected.styles,
-            [this.getSelected.child_target]: val,
-          },
+        const builders = this.xBuilders;
+        const item = this.getSelected;
+
+        builders.forEach((h, i) => {
+          if (h.id === item.parent_id) {
+            builders[i].styles = {
+              ...h.styles,
+              ...val,
+            };
+          }
         });
       },
       deep: true,

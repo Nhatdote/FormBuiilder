@@ -1,23 +1,16 @@
 <template>
-  <div
-    class="p-2"
-    :style="`background-color: ${elem.styles.bgColor || 'white'}; ${
-      elem.styles.border ? 'border: ' + elem.styles.border + 'px solid' : ''
-    }`"
-  >
+  <div :class="classNames.wrap" :style="css.wrap">
     <div class="grid grid-cols-3 gap-8">
       <div v-for="(item, i) in items" :key="i">
         <div
-          :class="`builder-elem mb-5 ${
+          :class="`${
             getSelected &&
             item.id === getSelected.id &&
             item.child_target === 'content'
               ? 'active'
               : ''
-          } ${item.content_class}`"
-          :style="`${
-            settings.align ? 'text-align: ' + settings.align + ';' : ''
-          } ${item.content_color ? 'color: ' + item.content_color : ''}`"
+          } ${classNames.content}`"
+          :style="css.content"
           @click.stop="settingChildOpen(item, 'content')"
         >
           {{ item.content }}
@@ -32,16 +25,14 @@
           </div>
           <div class="flex-grow ml-3 text-left">
             <div
-              :class="`builder-elem ${
+              :class="`${
                 getSelected &&
                 item.id === getSelected.id &&
                 item.child_target === 'title'
                   ? 'active'
                   : ''
-              } ${item.title_class}`"
-              :style="`${
-                settings.color ? 'color: ' + settings.color + ';' : ''
-              } ${item.title_color ? 'color: ' + item.title_color : ''}`"
+              } ${classNames.title}`"
+              :style="css.title"
               @click.stop="settingChildOpen(item, 'title')"
             >
               {{ item.title }}
@@ -71,51 +62,68 @@ export default {
   mounted() {},
   methods: {
     ...mapActions(["settingOpen", "setVersion"]),
-    settingChildOpen(item, type) {
-      this.$store.commit("settingOpen", [item, type]);
+    settingChildOpen(item, target) {
+      item.parent_id = this.elem.id;
+      item.child_target = target;
+
+      this.$store.commit("settingOpen", clone(item));
       this.setVersion();
     },
   },
   computed: {
     ...mapGetters(["getSelected"]),
-    settings() {
-      let elem = this.elem;
+    items() {
+      return this.elem.items;
+    },
+    classNames() {
+      const elem = this.elem;
+
+      const wrapClass = [];
+      elem.styles.boxShadow && wrapClass.push(elem.styles.boxShadow);
+      elem.styles.padding && wrapClass.push(elem.styles.padding);
+
+      const contentClass = ["builder-elem", "mb-5"];
+      elem.styles.content_typography &&
+        contentClass.push(elem.styles.content_typography);
+
+      const titleClass = ["builder-elem"];
+      elem.styles.title_typography &&
+        titleClass.push(elem.styles.title_typography);
 
       return {
-        align: elem.styles.align,
-        property: elem.styles.property,
-        color: elem.styles.color,
+        wrap: wrapClass.join(" "),
+        content: contentClass.join(" "),
+        title: titleClass.join(" "),
       };
     },
-    items() {
-      // const list = this.elem.items;
+    css() {
+      const elem = this.elem;
+      const styles = elem.styles;
 
-      // list.forEach((h) => {
-      //   if (h.styles && h.styles.title) {
-      //     h.title_class = h.styles.title.typography;
-      //     h.title_color = h.styles.title.color;
-      //   }
-      //   if (h.styles && h.styles.content) {
-      //     h.content_class = h.styles.content.typography;
-      //     h.content_color = h.styles.content.color;
-      //   }
-      // });
+      const wrapCss = [];
+      styles.bgColor && wrapCss.push(`background-color: ${styles.bgColor}`);
+      if (styles.border_width) {
+        wrapCss.push(`border: ${styles.border_width} solid`);
+        styles.border_style &&
+          wrapCss.push(`border-style: ${styles.border_style}`);
+        styles.border_color &&
+          wrapCss.push(`border-color: ${styles.border_color}`);
+        styles.border_radius &&
+          wrapCss.push(`border-radius: ${styles.border_radius}`);
+      }
 
-      // return list;
+      const contentCss = [];
+      styles.align && contentCss.push(`text-align: ${styles.align}`);
+      styles.content_color && contentCss.push(`color: ${styles.content_color}`);
 
-      return this.elem.items.map((h) => {
-        if (h.child_styles && h.child_styles.title) {
-          h.title_class = h.child_styles.title.typography;
-          h.title_color = h.child_styles.title.color;
-        }
+      const titleCss = [];
+      styles.title_color && titleCss.push(`color: ${styles.title_color}`);
 
-        if (h.child_styles && h.child_styles.content) {
-          h.content_class = h.child_styles.content.typography;
-          h.content_color = h.child_styles.content.color;
-        }
-
-        return h;
-      });
+      return {
+        wrap: wrapCss.join(";"),
+        content: contentCss.join(";"),
+        title: titleCss.join(";"),
+      };
     },
   },
 };

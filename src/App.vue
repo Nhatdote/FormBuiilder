@@ -1,4 +1,9 @@
 <template>
+  <div
+    id="import-class"
+    class="hidden p-1 p-2 p-3 p-4 p-5 p-6 p-7 p-8 p-9 p-10 shadow shadow-sm shadow-md shadow-lg"
+  ></div>
+
   <div class="flex flex-col w-full min-h-screen shado gap-3 bg-gray-100">
     <div id="header" class="flex justify-between p-2 border-b bg-white">
       <ShoppingCartIcon class="text-green-600 h-10 w-10" />
@@ -10,7 +15,11 @@
     </div>
 
     <div class="flex-grow flex gap-3">
-      <div id="side" class="flex-shrink-0 w-1/6 pl-3">
+      <div
+        id="side"
+        class="flex-shrink-0 w-1/6 pl-3"
+        @click.self="removeSelected"
+      >
         <draggable
           class="dragArea grid grid-cols-2 gap-2 list-group"
           :list="elems"
@@ -49,6 +58,7 @@
           item-key="id"
           :list="xBuilders"
           group="builder"
+          @click.self="removeSelected"
         >
           <template #item="{ element }">
             <div
@@ -117,7 +127,7 @@ import {
 import draggable from "vuedraggable";
 import elems from "./functions/elems";
 import { mapActions, mapGetters } from "vuex";
-import { uuid, clone } from "./functions/helpers";
+import { uuid, clone, _typeof } from "./functions/helpers";
 import HeadingElem from "./components/Heading/HeadingElem.vue";
 import HeadingSetting from "./components/Heading/HeadingSetting.vue";
 import ParaElem from "./components/Paragraph/ParaElem.vue";
@@ -165,6 +175,7 @@ export default {
       "update",
       "remove",
       "setSelect",
+      "removeSelected",
       "setSafeSelect",
       "settingOpen",
     ]),

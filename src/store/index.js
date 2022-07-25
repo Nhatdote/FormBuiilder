@@ -28,6 +28,7 @@ const store = createStore({
     remove: ({ commit }, item) => commit("remove", item),
     set: ({ commit }, items) => commit("set", items),
     setSelect: ({ commit }, item) => commit("setSelect", item),
+    removeSelected: ({ commit }) => commit("removeSelected"),
     setSafeSelect: ({ commit }, item) => commit("setSafeSelect", clone(item)),
     settingOpen: ({ commit }, props) => commit("settingOpen", props),
     setVersion: ({ commit }) => commit("setVersion"),
@@ -46,21 +47,11 @@ const store = createStore({
       (state.builders = state.builders.filter((h) => h !== item)),
     set: (state, items) => (state.builders = items),
     setSelect: (state, item) => (state.selected = item),
+    removeSelected: (state) => (state.selected = null),
     setSafeSelect: (state, item) => (state.safeSelected = item),
-    settingOpen: (state, props) => {
-      //@todo, custom for elem's children
-      state.selected = null;
-      state.safeSelected = null;
-      if (_typeof(props) === "array") {
-        const item = props[0];
-        item.child_target = props[1];
-
-        state.selected = item;
-        state.safeSelected = clone(item);
-      } else {
-        state.selected = props;
-        state.safeSelected = clone(props);
-      }
+    settingOpen: (state, item) => {
+      state.selected = item;
+      state.safeSelected = clone(item);
     },
     setVersion: (state) => state.version++,
   },

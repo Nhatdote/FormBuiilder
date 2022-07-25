@@ -26,15 +26,73 @@
         </div>
 
         <div class="mb-3">
-          <label for="border" class="ml-2">{{ "Border" }}</label>
+          <label for="boxShadow" class="ml-2">{{ "Box shadow" }}</label>
           <select
-            v-model="getSelected.styles.border"
+            v-model="getSelected.styles.boxShadow"
             class="block w-full border border-gray-500 rounded-md p-2"
           >
-            <option v-for="index in 4" :value="index" :key="index">
-              {{ index }}px
+            <option value="">None</option>
+            <option value="shadow-sm">Small</option>
+            <option value="shadow-md">Medium</option>
+            <option value="shadow-lg">Large</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="padding">Padding</label>
+          <select
+            v-model="getSelected.styles.padding"
+            class="block w-full border border-gray-500 rounded-md p-2"
+          >
+            <option value="">None</option>
+            <option v-for="index in 10" :value="`p-${index}`" :key="index">
+              {{ index }}
             </option>
           </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="border">Border</label>
+          <div class="flex gap-2 items-center w-100">
+            <select
+              style="width: 55px"
+              class="block border border-gray-500 rounded-md p-1"
+              v-model="getSelected.styles.border_width"
+            >
+              <option value="">None</option>
+              <option v-for="index in 5" :value="`${index}px`" :key="index">
+                {{ index }}px
+              </option>
+            </select>
+
+            <select
+              class="block border border-gray-500 rounded-md p-1 flex-grow"
+              v-model="getSelected.styles.border_style"
+            >
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+            </select>
+
+            <color-picker
+              v-model:pureColor="getSelected.styles.border_color"
+              useType="pure"
+              disableHistory
+              shape="circle"
+              lang="en"
+            />
+
+            <select
+              style="width: 55px"
+              class="block border border-gray-500 rounded-md p-1"
+              v-model="getSelected.styles.border_radius"
+            >
+              <option value="0">None</option>
+              <option v-for="index in 10" :value="`${index}px`" :key="index">
+                {{ index }} Radius
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -149,8 +207,6 @@ export default {
         { id: "content", label: "Content" },
         { id: "design", label: "Design" },
       ],
-      content: {},
-      design: {},
       images: avatars,
       bgColor: "white",
     };
@@ -167,11 +223,7 @@ export default {
 
       this.collapse = item.id;
     },
-    init() {
-      const settings = this.settings;
-      this.content = settings.content;
-      this.design = settings.design;
-    },
+    init() {},
     userAdd() {
       const uid = uuid();
       this.getSelected.items.push({
@@ -193,7 +245,7 @@ export default {
 
       let items = this.getSelected.items;
       let pos = items.findIndex((h) => h === item);
-      if (!pos) {
+      if (pos === -1) {
         this.getSelected.items.push(newItem);
       } else {
         pos = pos + 1;
@@ -207,62 +259,10 @@ export default {
   },
   computed: {
     ...mapGetters(["getSelected"]),
-    settings() {
-      const elem = this.getSelected;
-      let design = {};
-      let content = {};
-
-      if (elem && elem.styles) {
-        design = {
-          background: elem.styles.background,
-          align: elem.styles.align,
-          boxShadow: elem.styles.boxShadow,
-          border: elem.styles.border,
-          spacing: elem.styles.spacing,
-          padding: elem.styles.padding,
-        };
-      }
-
-      if (elem && elem.settings) {
-        content = {
-          layout: elem.settings.layout,
-          image: elem.settings.image,
-          title: elem.settings.title,
-          content: elem.settings.content,
-          btnText: elem.settings.btnText,
-          link: elem.settings.link,
-        };
-      }
-
-      return {
-        design: design,
-        content: content,
-      };
-    },
-    styles() {},
   },
   watch: {
     bgColor(val) {
       this.getSelected.styles.bgColor = val;
-    },
-    content: {
-      handler(val) {
-        this.$emit("draft", {
-          settings: val,
-        });
-      },
-      deep: true,
-    },
-    design: {
-      handler(val) {
-        this.$emit("draft", {
-          styles: val,
-        });
-      },
-      deep: true,
-    },
-    getSelected(val) {
-      this.init();
     },
   },
 };

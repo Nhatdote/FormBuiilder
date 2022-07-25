@@ -1,48 +1,44 @@
 <template>
   <div>
-    <div
-      :class="`flex ${settings.boxShadow ? settings.boxShadow : ''} layout-${
-        settings.layout
-      }`"
-      :style="`${settings.border ? 'border: ' + settings.border : ''}`"
-    >
+    <div :class="classNames.wrap" :style="css.wrap">
       <div class="left">
         <img
-          v-if="settings.image"
-          :src="settings.image"
+          v-if="elem.settings.image"
+          :src="elem.settings.image"
           alt=""
           class="w-full"
         />
         <div
           v-else
-          :style="`width: 100%; min-height: 300px; background-color: ${settings.background}`"
+          :style="`width: 100%; min-height: 300px; background-color: ${elem.styles.background}`"
         ></div>
       </div>
-      <div
-        class="right"
-        :style="`${
-          settings.padding ? 'padding: ' + settings.padding + 'px;' : ''
-        } ${settings.align ? 'text-align: ' + settings.align : ''}`"
-      >
+      <div class="right" :style="css.right">
         <div
           class="font-bold"
-          :style="settings.spacing ? `margin: ${settings.spacing}px 0` : ''"
+          :style="
+            elem.styles.spacing ? `margin: ${elem.styles.spacing}px 0` : ''
+          "
         >
-          {{ settings.title }}
+          {{ elem.settings.title }}
         </div>
-        <div :style="settings.spacing ? `margin: ${settings.spacing}px 0` : ''">
-          {{ settings.content }}
+        <div
+          :style="
+            elem.styles.spacing ? `margin: ${elem.styles.spacing}px 0` : ''
+          "
+        >
+          {{ elem.settings.content }}
         </div>
         <a
-          :href="settings.link"
+          :href="elem.settings.link"
           target="_blank"
-          v-if="settings.link"
+          v-if="elem.settings.link"
           class="bg-purple-500 hover:bg-purple-600 btn"
         >
-          {{ settings.btnText }}
+          {{ elem.settings.btnText }}
         </a>
         <button class="bg-purple-500 hover:bg-purple-600" v-else>
-          {{ settings.btnText }}
+          {{ elem.settings.btnText }}
         </button>
       </div>
     </div>
@@ -50,6 +46,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   props: {
     elem: {
@@ -62,22 +59,41 @@ export default {
   },
   mounted() {},
   computed: {
-    settings() {
+    classNames() {
       const elem = this.elem;
+      const styles = elem.styles;
+
+      const wrapClass = ["flex overflow-hidden"];
+      styles.boxShadow && wrapClass.push(styles.boxShadow);
+      wrapClass.push(`layout-${elem.settings.layout || "1"}`);
 
       return {
-        layout: elem.settings.layout,
-        image: elem.settings.image,
-        background: elem.styles.background,
-        title: elem.settings.title,
-        content: elem.settings.content,
-        btnText: elem.settings.btnText,
-        link: elem.settings.link,
-        align: elem.styles.align,
-        boxShadow: elem.styles.boxShadow,
-        border: elem.styles.border,
-        spacing: elem.styles.spacing,
-        padding: elem.styles.padding,
+        wrap: wrapClass.join(" "),
+      };
+    },
+    css() {
+      const elem = this.elem;
+      const styles = elem.styles;
+
+      const wrapCss = [];
+      styles.bgColor && wrapCss.push(`background-color: ${styles.bgColor}`);
+      if (styles.border_width) {
+        wrapCss.push(`border: ${styles.border_width} solid`);
+        styles.border_style &&
+          wrapCss.push(`border-style: ${styles.border_style}`);
+        styles.border_color &&
+          wrapCss.push(`border-color: ${styles.border_color}`);
+        styles.border_radius &&
+          wrapCss.push(`border-radius: ${styles.border_radius}`);
+      }
+
+      const rightCss = [];
+      styles.padding && rightCss.push(`padding: ${styles.padding}px`);
+      styles.align && rightCss.push(`text-align: ${styles.align}`);
+
+      return {
+        wrap: wrapCss.join(";"),
+        right: rightCss.join(";"),
       };
     },
   },
