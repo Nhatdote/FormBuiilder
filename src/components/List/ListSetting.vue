@@ -228,9 +228,7 @@ export default {
       alignments: alignments,
     };
   },
-  mounted() {
-    this.init();
-  },
+  mounted() {},
   methods: {
     toggleCollapse(item) {
       if (this.collapse && this.collapse === item.id) {
@@ -240,7 +238,6 @@ export default {
 
       this.collapse = item.id;
     },
-    init() {},
     userAdd() {
       const uid = uuid();
       this.getSelected.items.push({
@@ -286,12 +283,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tab-item {
-  border-bottom: 3px solid transparent;
-  &.active {
-    border-color: red;
-  }
-}
 .list-user {
   .list-user-actions {
     display: none;

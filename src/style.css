@@ -90,3 +90,65 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+h1              { font-size: 2em }
+h2              { font-size: 1.5em }
+h3              { font-size: 1.17em }
+h5              { font-size: .83em }
+h6              { font-size: .75em }
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bolder 
+}
+
+.dragging .builder-elem {
+    border-style: dashed;
+    border-color: red;
+}
+
+.builder-elem {
+  border: 1px dashed transparent;
+  position: relative;
+}
+
+.builder-elem:hover {
+  border-color: red;
+}
+
+.builder-elem:hover .builder-elem-remove {
+  display: flex;
+}
+
+.builder-elem.active {
+    border-style: solid;
+    border-color: red;
+}
+
+.builder-elem-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: red;
+  opacity: 0.8;
+  color: white;
+  font-weight: bold;
+  border-radius: 2px;
+  cursor: pointer;
+  z-index: 2
+}
+
+.builder-elem-remove:hover {
+  opacity: 1;
+}
+
+.tab-item {
+  border-bottom: 3px solid transparent;
+}
+
+.tab-item.active {
+  border-color: red;
+}

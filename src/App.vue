@@ -55,7 +55,9 @@
 
         <draggable
           v-show="!isEmptyBuilder"
-          class="dragArea h-full w-full border p-2"
+          :class="`dragArea h-full w-full border p-2 ${
+            dragging ? 'dragging' : ''
+          }`"
           item-key="id"
           :list="xBuilders"
           group="builder"
@@ -63,7 +65,7 @@
         >
           <template #item="{ element }">
             <div
-              :class="`builder-elem border border-dashed border-transparent relative ${
+              :class="`builder-elem ${
                 getSelected && element.id === getSelected.id ? 'active' : ''
               }`"
             >
@@ -236,6 +238,7 @@ export default {
       console.log(this.builders);
     },
     removeElem(item) {
+      console.log(1);
       if (!window.confirm("Are you sure?")) {
         return;
       }
@@ -271,53 +274,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-button[disabled] {
-  background: rgb(168 85 247) !important;
-  opacity: 0.7 !important;
-}
-.blink {
-  animation: blink 0.2s ease infinite alternate;
-}
-@keyframes blink {
-  0% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.builder-elem {
-  &:hover {
-    border-color: red;
-
-    .builder-elem-remove {
-      display: flex;
-    }
-  }
-  &.active {
-    border-style: solid;
-    border-color: red;
-  }
-}
-.builder-elem-remove {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 18px;
-  height: 18px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: red;
-  opacity: 0.8;
-  color: white;
-  font-weight: bold;
-  border-radius: 2px;
-  cursor: pointer;
-  &:hover {
-    opacity: 1;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

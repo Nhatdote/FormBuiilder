@@ -2,7 +2,8 @@
   <div :class="classNames.wrap" :style="css.wrap">
     <div class="grid grid-cols-3 gap-8">
       <div v-for="(item, i) in items" :key="i">
-        <div
+        <component
+          :is="elem.styles.content_tag || 'div'"
           :class="`${
             getSelected &&
             item.id === getSelected.id &&
@@ -14,7 +15,7 @@
           @click.stop="settingChildOpen(item, 'content')"
         >
           {{ item.content }}
-        </div>
+        </component>
 
         <div class="flex">
           <div class="flex-shrink-0">
@@ -24,7 +25,8 @@
             </div>
           </div>
           <div class="flex-grow ml-3 text-left">
-            <div
+            <component
+              :is="elem.styles.title_tag || 'div'"
               :class="`${
                 getSelected &&
                 item.id === getSelected.id &&
@@ -36,7 +38,7 @@
               @click.stop="settingChildOpen(item, 'title')"
             >
               {{ item.title }}
-            </div>
+            </component>
             <div>{{ item.position }}</div>
           </div>
         </div>
@@ -128,40 +130,3 @@ export default {
   },
 };
 </script>
-
-<style scoped lang="scss">
-.builder-elem {
-  border: 1px dashed transparent;
-
-  &:hover {
-    border-color: red;
-
-    .builder-elem-remove {
-      display: flex;
-    }
-  }
-  &.active {
-    border-style: solid;
-    border-color: red;
-  }
-}
-.builder-elem-remove {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 18px;
-  height: 18px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: red;
-  opacity: 0.8;
-  color: white;
-  font-weight: bold;
-  border-radius: 2px;
-  cursor: pointer;
-  &:hover {
-    opacity: 1;
-  }
-}
-</style>

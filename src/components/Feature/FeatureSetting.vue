@@ -191,12 +191,3 @@ export default {
   watch: {},
 };
 </script>
-
-<style lang="scss" scoped>
-.tab-item {
-  border-bottom: 3px solid transparent;
-  &.active {
-    border-color: red;
-  }
-}
-</style>
