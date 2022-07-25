@@ -225,7 +225,7 @@ export default {
       ],
       images: avatars,
       bgColor: "white",
-      alignments: alignments,
+      alignments,
     };
   },
   mounted() {},

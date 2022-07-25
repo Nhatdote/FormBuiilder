@@ -20,9 +20,13 @@
             class="block w-full border border-gray-500 rounded-md p-2"
             v-model="getSelected.styles.align"
           >
-            <option value="left">{{ "Left" }}</option>
-            <option value="center">{{ "Center" }}</option>
-            <option value="right">{{ "Right" }}</option>
+            <option
+              v-for="align in alignments"
+              :value="align.id"
+              :key="align.id"
+            >
+              {{ align.label }}
+            </option>
           </select>
         </div>
 
@@ -163,11 +167,13 @@
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { mapGetters } from "vuex";
+import { alignments } from "../../functions/helpers";
 
 export default {
   components: { ColorPicker },
   data() {
     return {
+      alignments,
       activeTab: "content",
       tabs: [
         { id: "content", label: "Content" },
