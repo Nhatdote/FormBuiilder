@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="py-5">
     <div class="mb-3 flex">
       <color-picker
         v-model:pureColor="settings[target + '_color']"

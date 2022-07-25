@@ -26,6 +26,22 @@
         </div>
 
         <div class="mb-3">
+          <label for="align">{{ "Alignment" }}</label>
+          <select
+            class="block w-full border border-gray-500 rounded-md p-2"
+            v-model="getSelected.styles.align"
+          >
+            <option
+              v-for="align in alignments"
+              :value="align.id"
+              :key="align.id"
+            >
+              {{ align.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label for="boxShadow" class="ml-2">{{ "Box shadow" }}</label>
           <select
             v-model="getSelected.styles.boxShadow"
@@ -187,7 +203,7 @@
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { mapGetters } from "vuex";
-import { avatars, uuid } from "../../functions/helpers";
+import { avatars, uuid, alignments } from "../../functions/helpers";
 import { DuplicateIcon, TrashIcon, MenuAlt4Icon } from "@heroicons/vue/outline";
 import draggable from "vuedraggable";
 
@@ -209,6 +225,7 @@ export default {
       ],
       images: avatars,
       bgColor: "white",
+      alignments: alignments,
     };
   },
   mounted() {

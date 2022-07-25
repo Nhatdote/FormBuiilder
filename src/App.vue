@@ -16,7 +16,8 @@
 
     <div class="flex-grow flex gap-3">
       <div
-        id="side"
+        id="left"
+        ref="left"
         class="flex-shrink-0 w-1/6 pl-3"
         @click.self="removeSelected"
       >
@@ -83,7 +84,11 @@
         </draggable>
       </div>
 
-      <div id="right" class="flex-shrink-0 w-1/6 p-2 bg-white text-left">
+      <div
+        id="right"
+        class="flex-shrink-0 w-1/6 p-2 bg-white text-left"
+        ref="right"
+      >
         <div v-if="getSelected">
           <component
             :is="getSelected.component_setting"
@@ -93,21 +98,14 @@
 
           <div class="py-2 sticky bottom-0 bg-white">
             <div class="flex gap-x-2">
-              <button
-                @click="settingSave"
-                class="w-full bg-purple-500 text-white hover:bg-purple-600 transition-all"
-                :disabled="saving"
-              >
-                {{ saving ? "SAVING..." : "SAVE" }}
-              </button>
               <button @click="settingCancel" class="w-full" :disabled="saving">
-                {{ "CANCEL" }}
+                {{ "DISCARD CHANGE" }}
               </button>
             </div>
           </div>
         </div>
 
-        <div v-else class="pt-20">
+        <div v-else class="pt-20 text-center">
           {{ "CLICK TO ELEM TO SETTINGS" }}
         </div>
       </div>
@@ -123,6 +121,7 @@ import {
   MenuAlt1Icon,
   CubeIcon,
   ClipboardListIcon,
+  SwitchVerticalIcon,
 } from "@heroicons/vue/outline";
 import draggable from "vuedraggable";
 import elems from "./functions/elems";
@@ -137,6 +136,8 @@ import FeatureSetting from "./components/Feature/FeatureSetting.vue";
 import ListElem from "./components/List/ListElem.vue";
 import ListSetting from "./components/List/ListSetting.vue";
 import SimpleTextSetting from "./components/SimpleText/SimpleTextSetting.vue";
+import SpacingElem from "./components/Spacing/SpacingElem.vue";
+import SpacingSetting from "./components/Spacing/SpacingSetting.vue";
 
 export default {
   components: {
@@ -144,6 +145,7 @@ export default {
     ShoppingCartIcon,
     FlagIcon,
     MenuAlt1Icon,
+    SwitchVerticalIcon,
     draggable,
     HeadingElem,
     HeadingSetting,
@@ -156,6 +158,8 @@ export default {
     ListElem,
     ListSetting,
     SimpleTextSetting,
+    SpacingElem,
+    SpacingSetting,
   },
   data() {
     return {
@@ -167,6 +171,23 @@ export default {
   },
   mounted() {
     this.isEmptyBuilder = !this.xBuilders.length && !this.dragging;
+
+    try {
+      const right = this.$refs.right;
+      const left = this.$refs.left;
+
+      let rect = right.getBoundingClientRect();
+      right.style.height = rect.height + "px";
+      right.style.position = "sticky";
+      right.style.top = "10px";
+
+      rect = left.getBoundingClientRect();
+      left.style.height = rect.height + "px";
+      left.style.position = "sticky";
+      left.style.top = "10px";
+    } catch {
+      console.warn("can't set sticky panel");
+    }
   },
   methods: {
     ...mapActions([
@@ -201,14 +222,6 @@ export default {
     },
     onDragEnd() {
       this.dragging = false;
-    },
-    settingSave() {
-      this.saving = true;
-      this.setSafeSelect(this.getSelected);
-
-      setTimeout((h) => {
-        this.saving = false;
-      }, 1000);
     },
     settingCancel() {
       this.update({

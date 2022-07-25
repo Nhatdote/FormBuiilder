@@ -19,6 +19,17 @@ const elems = [
     component_setting: "HeadingSetting",
   },
   {
+    id: "spacer",
+    label: "Spacer",
+    desc: "Spacer",
+    icon: "SwitchVerticalIcon",
+    settings: {
+      spacing: 20,
+    },
+    component: "SpacingElem",
+    component_setting: "SpacingSetting",
+  },
+  {
     id: "paragraph",
     label: "Paragraph",
     desc: "Create a normal text",

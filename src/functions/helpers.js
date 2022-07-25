@@ -14,4 +14,11 @@ const avatars = [
   "https://img.myloview.com/stickers/funny-cartoon-monster-face-vector-monster-square-avatar-400-205411727.jpg",
 ];
 
-export { uuid, clone, _typeof, avatars };
+const alignments = [
+  { id: "left", label: "Left" },
+  { id: "right", label: "Right" },
+  { id: "center", label: "Center" },
+  { id: "justify", label: "Justify" },
+];
+
+export { uuid, clone, _typeof, avatars, alignments };
