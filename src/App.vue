@@ -6,7 +6,7 @@
 
   <div class="flex flex-col w-full min-h-screen shado gap-3 bg-gray-100">
     <div id="header" class="flex justify-between p-3 border-b bg-white">
-      <img :src="Logo" alt="" style="height: 40px" />
+      <img :src="'/logo.png'" alt="" style="height: 40px" />
       <button
         @click="exportJSON"
         class="flex align-items-center pointer-events-auto rounded-md bg-indigo-600 py-2 px-3 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500"
@@ -143,8 +143,8 @@ import ListSetting from "./components/List/ListSetting.vue";
 import SimpleTextSetting from "./components/SimpleText/SimpleTextSetting.vue";
 import SpacingElem from "./components/Spacing/SpacingElem.vue";
 import SpacingSetting from "./components/Spacing/SpacingSetting.vue";
-import Logo from "./images/logo.png";
 import downloadjs from "downloadjs";
+import axios from "axios";
 
 export default {
   components: {
@@ -171,14 +171,13 @@ export default {
   },
   data() {
     return {
-      Logo,
       elems: elems,
       dragging: false,
       saving: false,
       isEmptyBuilder: true,
     };
   },
-  mounted() {
+  async mounted() {
     this.isEmptyBuilder = !this.xBuilders.length && !this.dragging;
 
     try {
@@ -197,6 +196,9 @@ export default {
     } catch {
       console.warn("can't set sticky panel");
     }
+
+    const test = await axios.get("https://dev.beae.com");
+    console.log(test);
   },
   methods: {
     ...mapActions([
